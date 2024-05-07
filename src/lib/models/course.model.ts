@@ -8,24 +8,39 @@ const courseSchema = new mongoose.Schema(
     },
     title: {
       type: String,
-      require: true,
+      required: true,
       min: 1,
       max: 30,
     },
     description: {
       type: String,
-      required: true,
     },
-    imageURL: {
+    imageUrl: {
       type: String,
     },
     price: {
-      type: Number,
-      required: true,
+      type: Number || null,
     },
-    categoryId: {
+    categories: {
       type: String,
-      required: true,
+    },
+    attachments: {
+      type:
+        [
+          {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Attachment",
+          },
+        ] || null,
+    },
+    chapters: {
+      type:
+        [
+          {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Chapter",
+          },
+        ] || null,
     },
     isPublished: {
       type: Boolean,

@@ -1,6 +1,5 @@
 "use client";
 import * as z from "zod";
-import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
@@ -17,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { createCourse } from "@/lib/validations/course";
+import { createCourse } from "@/lib/actions/course.action";
 
 const formSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
@@ -35,15 +34,15 @@ const page = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log(values);
-    const res = await createCourse();
 
-    // try {
-    //   const response = await axios.post("/api/course", values);
+    try {
+      const res = await createCourse(values.title);
 
-    //   router.push(`/teacher/course/${response.data.id}`);
-    // } catch (err: any) {
-    //   toast.error(err.message);
-    // }
+      toast.success("Course Created");
+      router.push(`/teacher/courses/${res._id}`);
+    } catch (err: any) {
+      toast.error(err.message);
+    }
   };
 
   return (
