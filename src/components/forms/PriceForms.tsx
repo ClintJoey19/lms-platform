@@ -9,26 +9,27 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 import { LoaderCircle } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { updateCourse } from "@/lib/actions/course.action";
+import { Input } from "@/components/ui/input";
+import { priceFormat } from "@/lib/utils";
 
-interface TitleFormProps {
+interface PriceFormProps {
   initialData: {
-    title: string;
+    price: number;
   };
   courseId: string;
 }
 
 const formSchema = z.object({
-  title: z.string().min(1, { message: "Title is required" }),
+  price: z.coerce.number(),
 });
 
-const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
+const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
 
   const toggleEdit = () => setIsEditing((prev) => !prev);
@@ -42,9 +43,9 @@ const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await updateCourse(courseId, "title", values.title);
+      await updateCourse(courseId, "price", values.price);
 
-      toast.success("Course title updated");
+      toast.success("Course description updated");
       setIsEditing(false);
     } catch (err: any) {
       console.error(err.message);
@@ -55,12 +56,12 @@ const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Course Title
+        Course Price
         <Button variant="ghost" onClick={toggleEdit}>
           {!isEditing ? (
             <>
               <Pencil className="h-4 w-4 mr-2" />
-              Edit title
+              Edit price
             </>
           ) : (
             <>Cancel</>
@@ -68,7 +69,13 @@ const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
         </Button>
       </div>
       {!isEditing ? (
-        <p className="text-sm mt-2">{initialData.title}</p>
+        <p
+          className={`text-sm mt-2 ${
+            !initialData.price && "text-slate-500 italic"
+          }`}
+        >
+          {priceFormat(initialData.price) || "No price."}
+        </p>
       ) : (
         <>
           <Form {...form}>
@@ -78,13 +85,13 @@ const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
             >
               <FormField
                 control={form.control}
-                name="title"
+                name="price"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
                       <Input
-                        disabled={isSubmitting}
-                        placeholder="e.g. 'Advanced Web Development'"
+                        type="number"
+                        placeholder="e.g '1000'"
                         {...field}
                       />
                     </FormControl>
@@ -108,4 +115,4 @@ const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
   );
 };
 
-export default TitleForm;
+export default PriceForm;

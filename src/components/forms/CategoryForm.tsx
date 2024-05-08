@@ -9,26 +9,53 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 import { LoaderCircle } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { updateCourse } from "@/lib/actions/course.action";
+import Combobox from "@/components/ui/combobox";
 
-interface TitleFormProps {
+interface CategoryFormProps {
   initialData: {
-    title: string;
+    category: string;
   };
   courseId: string;
 }
 
+const choices = [
+  {
+    value: "technology",
+    label: "Technology",
+  },
+  {
+    value: "education",
+    label: "Education",
+  },
+  {
+    value: "agriculture",
+    label: "Agriculture",
+  },
+  {
+    value: "music",
+    label: "Music",
+  },
+  {
+    value: "design",
+    label: "Arts & Design",
+  },
+  {
+    value: "engineering",
+    label: "Engineering",
+  },
+];
+
 const formSchema = z.object({
-  title: z.string().min(1, { message: "Title is required" }),
+  category: z.string().min(1, { message: "Category is required" }),
 });
 
-const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
+const CategoryForm = ({ initialData, courseId }: CategoryFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
 
   const toggleEdit = () => setIsEditing((prev) => !prev);
@@ -40,11 +67,15 @@ const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
 
   const { isSubmitting, isValid } = form.formState;
 
+  const selectedOption = choices.find(
+    (choice) => choice.value === initialData.category
+  );
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await updateCourse(courseId, "title", values.title);
+      await updateCourse(courseId, "category", values.category);
 
-      toast.success("Course title updated");
+      toast.success("Course category updated");
       setIsEditing(false);
     } catch (err: any) {
       console.error(err.message);
@@ -55,12 +86,12 @@ const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Course Title
+        Course Category
         <Button variant="ghost" onClick={toggleEdit}>
           {!isEditing ? (
             <>
               <Pencil className="h-4 w-4 mr-2" />
-              Edit title
+              Edit category
             </>
           ) : (
             <>Cancel</>
@@ -68,7 +99,13 @@ const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
         </Button>
       </div>
       {!isEditing ? (
-        <p className="text-sm mt-2">{initialData.title}</p>
+        <p
+          className={`text-sm mt-2 ${
+            !initialData.category && "text-slate-500 italic"
+          }`}
+        >
+          {selectedOption?.label || "No category."}
+        </p>
       ) : (
         <>
           <Form {...form}>
@@ -78,15 +115,11 @@ const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
             >
               <FormField
                 control={form.control}
-                name="title"
+                name="category"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input
-                        disabled={isSubmitting}
-                        placeholder="e.g. 'Advanced Web Development'"
-                        {...field}
-                      />
+                      <Combobox choices={choices} {...field} label="category" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -108,4 +141,4 @@ const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
   );
 };
 
-export default TitleForm;
+export default CategoryForm;

@@ -6,7 +6,7 @@ export const courseSchema = z.object({
   description: z.optional(z.string()),
   imageUrl: z.optional(z.string()),
   price: z.optional(z.number().or(z.null())),
-  categories: z.optional(z.string().or(z.null())),
+  category: z.optional(z.string().or(z.null())),
   attachments: z.optional(z.array(z.string()).or(z.null())),
   isPublished: z.optional(z.boolean()),
 });

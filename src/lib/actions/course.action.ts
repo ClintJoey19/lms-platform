@@ -16,6 +16,24 @@ interface Course {
   isPublished: boolean;
 }
 
+export const getCourses = async (userId: string | null) => {
+  try {
+    connectToDB();
+
+    let courses = null;
+
+    if (userId) {
+      courses = await Course.find({ userId: userId });
+      return parseJSON(courses);
+    }
+
+    courses = await Course.find();
+    return parseJSON(courses);
+  } catch (error: any) {
+    console.error(error.message);
+  }
+};
+
 export const getCourse = async (id: string) => {
   try {
     connectToDB();
@@ -44,7 +62,7 @@ export const createCourse = async (title: string) => {
       description: "",
       imageUrl: "",
       price: null,
-      categories: "",
+      category: "",
       attachments: null,
       chapters: null,
       isPublished: false,

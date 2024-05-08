@@ -103,7 +103,7 @@ const DescriptionForm = ({ initialData, courseId }: DescriptionFormProps) => {
                   <LoaderCircle className="h-6 w-6 animate-spin" />
                 )}
                 <Button type="submit" disabled={!isValid || isSubmitting}>
-                  Submit
+                  Save
                 </Button>
               </div>
             </form>
