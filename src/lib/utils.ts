@@ -9,6 +9,9 @@ export const parseJSON = (json: any) => {
   return JSON.parse(JSON.stringify(json));
 };
 
-export const priceFormat = (price: number) => {
-  return price.toLocaleString("en-US", { style: "currency", currency: "PHP" });
+export const priceFormat = (price: number | null) => {
+  return (
+    price &&
+    price?.toLocaleString("en-US", { style: "currency", currency: "PHP" })
+  );
 };

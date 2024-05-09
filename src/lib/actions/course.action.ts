@@ -1,20 +1,10 @@
 "use server";
+
 import { revalidatePath } from "next/cache";
 import { Course } from "../models/course.model";
 import { connectToDB } from "../mongoose";
 import { auth } from "@clerk/nextjs/server";
 import { parseJSON } from "../utils";
-
-interface Course {
-  userId: string;
-  title: string;
-  description: string;
-  imageUrl: string;
-  price: number | null;
-  categories: [] | null;
-  attachments: [] | null;
-  isPublished: boolean;
-}
 
 export const getCourses = async (userId: string | null) => {
   try {
@@ -68,9 +58,10 @@ export const createCourse = async (title: string) => {
       isPublished: false,
     });
 
-    await newCourse.save();
+    const res = await newCourse.save();
 
     revalidatePath("/teacher/courses");
+    return parseJSON(res);
   } catch (err: any) {
     console.error(err.message);
   }
@@ -87,5 +78,25 @@ export const updateCourse = async (id: string, key: string, value: any) => {
     revalidatePath(`/teacher/course/${id}`);
   } catch (err: any) {
     console.error(err.message);
+  }
+};
+
+export const addAttachment = async (id: string, attachmentId: string) => {
+  try {
+    connectToDB();
+
+    // pending
+  } catch (error: any) {
+    console.error(error.message);
+  }
+};
+
+export const addChapter = async (id: string, chapterId: string) => {
+  try {
+    connectToDB();
+
+    // pending
+  } catch (error: any) {
+    console.error(error.message);
   }
 };
