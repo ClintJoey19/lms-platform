@@ -4,19 +4,26 @@ import { Button } from "@/components/ui/button";
 import { ImageIcon, PlusCircle } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { updateCourse } from "@/lib/actions/course.action";
+import { addAttachment, updateCourse } from "@/lib/actions/course.action";
 import Image from "next/image";
 import FileUpload from "../global/FileUpload";
+import { createAttachment } from "@/lib/actions/attachment.actions";
+
+interface Attachment {
+  name: string;
+  fileUrl: string;
+}
 
 interface AttachmentFormProps {
   initialData: {
-    imageUrl: string;
+    attachments: Attachment[] | null;
   };
   courseId: string;
 }
 
 const formSchema = z.object({
-  imageUrl: z.string(),
+  name: z.optional(z.string().or(z.undefined())),
+  fileUrl: z.string(),
 });
 
 const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) => {
@@ -25,10 +32,16 @@ const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) => {
   const toggleEdit = () => setIsEditing((prev) => !prev);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      await updateCourse(courseId, "imageUrl", values.imageUrl);
+    const { name, fileUrl } = values;
 
-      toast.success("Course image updated");
+    try {
+      // save first the data to attachment and return the id
+      const attachment = await createAttachment(name, fileUrl);
+
+      // get the id and update the attachments of the course by it's courseId
+      await addAttachment(courseId, attachment._id);
+
+      toast.success("Course attachment updated");
       setIsEditing(false);
     } catch (error: any) {
       console.error(error.message);
@@ -51,26 +64,15 @@ const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) => {
         </Button>
       </div>
       {!isEditing &&
-        (!initialData.imageUrl ? (
-          <div className="h-60 flex justify-center items-center bg-slate-200 rounded-md">
-            <ImageIcon />
-          </div>
-        ) : (
-          <div className="relative aspect-video mt-2 rounded-md overflow-hidden">
-            <Image
-              src={initialData.imageUrl}
-              alt="course image"
-              fill
-              className="object-cover"
-            />
-          </div>
-        ))}
-      {isEditing && (
+      (!initialData.attachments || initialData.attachments?.length === 0) ? (
+        <p className="text-sm text-slate-500 italic mt-2">No attachments.</p>
+      ) : (
         <FileUpload
           endpoint="courseAttachments"
           onChange={(url) => {
             if (url) {
-              onSubmit({ imageUrl: url });
+              const fileName = url.split("/").pop();
+              onSubmit({ name: fileName, fileUrl: url });
             }
           }}
         />

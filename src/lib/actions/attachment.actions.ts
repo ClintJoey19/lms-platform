@@ -1,13 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { Attachment } from "../models/attachment.mode";
+import { Attachment } from "../models/attachment.model";
 import { connectToDB } from "../mongoose";
 import { parseJSON } from "../utils";
 
 export const createAttachment = async (
-  courseId: string,
-  name: string,
+  name: string | undefined,
   fileUrl: string
 ) => {
   try {
@@ -19,8 +18,6 @@ export const createAttachment = async (
     });
 
     await attachment.save();
-
-    revalidatePath(`/teacher/courses/${courseId}`);
 
     return parseJSON(attachment);
   } catch (error: any) {

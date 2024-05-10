@@ -85,7 +85,16 @@ export const addAttachment = async (id: string, attachmentId: string) => {
   try {
     connectToDB();
 
-    // pending
+    const course = await Course.findById(id);
+
+    const res = await Course.findByIdAndUpdate(id, {
+      attachments: course.attachments
+        ? [...course.attachments, attachmentId]
+        : [attachmentId],
+    });
+
+    revalidatePath(`/teacher/course/${id}`);
+    return parseJSON(res);
   } catch (error: any) {
     console.error(error.message);
   }

@@ -27,7 +27,6 @@ const page = async ({ params }: { params: { courseId: string } }) => {
     course.category,
     course.attachments,
     course.chapters,
-    course.isPublished,
   ];
 
   const totalFields = requiredFields.length;
