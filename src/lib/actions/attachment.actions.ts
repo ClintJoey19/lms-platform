@@ -55,7 +55,7 @@ export const deleteAttachment = async (id: string) => {
   try {
     connectToDB();
 
-    // pending
+    await Attachment.findByIdAndDelete(id);
   } catch (error: any) {
     console.error(error.message);
   }

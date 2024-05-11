@@ -13,6 +13,7 @@ import ImageForm from "@/components/forms/ImageForm";
 import CategoryForm from "@/components/forms/CategoryForm";
 import PriceForm from "@/components/forms/PriceForms";
 import AttachmentForm from "@/components/forms/AttachmentForms";
+import { getAttachment } from "@/lib/actions/attachment.actions";
 
 const page = async ({ params }: { params: { courseId: string } }) => {
   const course = await getCourse(params.courseId);
@@ -28,6 +29,15 @@ const page = async ({ params }: { params: { courseId: string } }) => {
     course.attachments,
     course.chapters,
   ];
+
+  let courseAttachments = [];
+
+  if (course) {
+    for (const attachment of course.attachments) {
+      const res = await getAttachment(attachment);
+      courseAttachments.push(res);
+    }
+  }
 
   const totalFields = requiredFields.length;
   const completedFields = requiredFields.filter(Boolean).length;
@@ -76,7 +86,11 @@ const page = async ({ params }: { params: { courseId: string } }) => {
               <h2 className="text-xl">Resources & Attachments</h2>
             </div>
             <div>
-              <AttachmentForm initialData={course} courseId={params.courseId} />
+              <AttachmentForm
+                initialData={course}
+                courseId={params.courseId}
+                courseAttachments={courseAttachments}
+              />
             </div>
           </div>
         </div>
