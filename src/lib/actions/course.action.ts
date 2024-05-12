@@ -104,7 +104,18 @@ export const addChapter = async (id: string, chapterId: string) => {
   try {
     connectToDB();
 
-    // pending
+    const course = await Course.findById(id);
+
+    if (!course) {
+      throw new Error("Course not found");
+    }
+
+    const res = await Course.findByIdAndUpdate(id, {
+      chapters: course.chapters ? [...course.chapters, chapterId] : [chapterId],
+    });
+
+    revalidatePath(`/teacher/course/${id}`);
+    return parseJSON(res);
   } catch (error: any) {
     console.error(error.message);
   }

@@ -1,20 +1,33 @@
 import mongoose from "mongoose";
 
-const chapterSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    min: 1,
-    max: 30,
-    required: true,
+const chapterSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      min: 1,
+      required: true,
+    },
+    description: {
+      type: String,
+    },
+    videoUrl: {
+      type: String,
+    },
+    position: {
+      type: Number,
+    },
+    isPublished: {
+      type: Boolean,
+      default: false,
+    },
+    isFree: {
+      type: Boolean,
+      default: false,
+    },
+    muxData: {},
   },
-  description: {
-    type: String,
-  },
-  isDone: {
-    type: Boolean,
-    default: false,
-  },
-});
+  { timestamps: true }
+);
 
 export const Chapter =
   mongoose.models?.Chapter || mongoose.model("Chapter", chapterSchema);

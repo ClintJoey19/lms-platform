@@ -14,6 +14,7 @@ import CategoryForm from "@/components/forms/CategoryForm";
 import PriceForm from "@/components/forms/PriceForms";
 import AttachmentForm from "@/components/forms/AttachmentForms";
 import { getAttachment } from "@/lib/actions/attachment.actions";
+import ChapterForm from "@/components/forms/ChapterForm";
 
 const page = async ({ params }: { params: { courseId: string } }) => {
   const course = await getCourse(params.courseId);
@@ -26,7 +27,6 @@ const page = async ({ params }: { params: { courseId: string } }) => {
     course.imageUrl,
     course.price,
     course.category,
-    course.attachments,
     course.chapters,
   ];
 
@@ -40,7 +40,9 @@ const page = async ({ params }: { params: { courseId: string } }) => {
   }
 
   const totalFields = requiredFields.length;
-  const completedFields = requiredFields.filter(Boolean).length;
+  const completedFields = requiredFields.filter((field) => {
+    return Array.isArray(field) ? field.length > 0 : Boolean(field);
+  }).length;
 
   return (
     <div className="p-6">
@@ -69,7 +71,7 @@ const page = async ({ params }: { params: { courseId: string } }) => {
               <IconBadge icon={ListChecks} />
               <h2 className="text-xl">Course chapters</h2>
             </div>
-            <div>TODO: Chapters</div>
+            <ChapterForm initialData={course} courseId={params.courseId} />
           </div>
           <div>
             <div className="flex items-center gap-x-2">
