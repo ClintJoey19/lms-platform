@@ -15,6 +15,7 @@ import PriceForm from "@/components/forms/PriceForms";
 import AttachmentForm from "@/components/forms/AttachmentForms";
 import { getAttachment } from "@/lib/actions/attachment.actions";
 import ChapterForm from "@/components/forms/ChapterForm";
+import { getChapter } from "@/lib/actions/chapter.actions";
 
 const page = async ({ params }: { params: { courseId: string } }) => {
   const course = await getCourse(params.courseId);
@@ -31,11 +32,19 @@ const page = async ({ params }: { params: { courseId: string } }) => {
   ];
 
   let courseAttachments = [];
+  let courseChapters = [];
 
   if (course) {
+    // atachments
     for (const attachment of course.attachments) {
       const res = await getAttachment(attachment);
       courseAttachments.push(res);
+    }
+
+    // chapters
+    for (const chapter of course.chapters) {
+      const res = await getChapter(chapter);
+      courseChapters.push(res);
     }
   }
 
@@ -71,7 +80,11 @@ const page = async ({ params }: { params: { courseId: string } }) => {
               <IconBadge icon={ListChecks} />
               <h2 className="text-xl">Course chapters</h2>
             </div>
-            <ChapterForm initialData={course} courseId={params.courseId} />
+            <ChapterForm
+              initialData={course}
+              courseId={params.courseId}
+              chapters={courseChapters}
+            />
           </div>
           <div>
             <div className="flex items-center gap-x-2">

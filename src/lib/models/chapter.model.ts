@@ -13,9 +13,6 @@ const chapterSchema = new mongoose.Schema(
     videoUrl: {
       type: String,
     },
-    position: {
-      type: Number,
-    },
     isPublished: {
       type: Boolean,
       default: false,

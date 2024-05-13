@@ -10,7 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
+import { Loader2, PlusCircle } from "lucide-react";
 import { LoaderCircle } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -18,20 +18,33 @@ import { addChapter, updateCourse } from "@/lib/actions/course.action";
 import { Input } from "@/components/ui/input";
 import { createChapter } from "@/lib/actions/chapter.actions";
 import { useRouter } from "next/navigation";
+import ChaptersList from "../dashboard/teacher/courses/ChaptersList";
+
+interface Chapter {
+  _id: string;
+  title: string;
+  description: string;
+  videoUrl: string;
+  isPublished: boolean;
+  isFree: boolean;
+  muxData: object;
+}
 
 interface ChapterFormProps {
   initialData: {
     chapters: string[] | null;
   };
   courseId: string;
+  chapters: Chapter[];
 }
 
 const formSchema = z.object({
   title: z.string().min(1, { message: "Chapter title is required" }),
 });
 
-const ChapterForm = ({ initialData, courseId }: ChapterFormProps) => {
+const ChapterForm = ({ initialData, courseId, chapters }: ChapterFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const router = useRouter();
 
   const toggleEdit = () => setIsEditing((prev) => !prev);
@@ -55,6 +68,22 @@ const ChapterForm = ({ initialData, courseId }: ChapterFormProps) => {
     } catch (err: any) {
       console.error(err.message);
       toast.error(err.message);
+    } finally {
+      setIsEditing(false);
+    }
+  };
+
+  const onReorder = async (updatedChapters: string[]) => {
+    try {
+      setIsUpdating(true);
+
+      await updateCourse(courseId, "chapters", updatedChapters);
+      toast.success("Chapters reordered");
+    } catch (error: any) {
+      console.error(error.message);
+      toast.error("There was an error in reordering");
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -63,7 +92,12 @@ const ChapterForm = ({ initialData, courseId }: ChapterFormProps) => {
   };
 
   return (
-    <div className="mt-6 border bg-slate-100 rounded-md p-4">
+    <div className="mt-6 border bg-slate-100 rounded-md p-4 relative">
+      {isUpdating && (
+        <div className="absolute h-full w-full bg-slate-500/20 flex items-center justify-center top-0 right-0 rounded-md">
+          <Loader2 className="h-6 w-6 animate-spin text-sky-700" />
+        </div>
+      )}
       <div className="font-medium flex items-center justify-between">
         Course Chapters
         <Button variant="ghost" onClick={toggleEdit}>
@@ -104,7 +138,7 @@ const ChapterForm = ({ initialData, courseId }: ChapterFormProps) => {
                 <LoaderCircle className="h-6 w-6 animate-spin" />
               )}
               <Button type="submit" disabled={!isValid || isSubmitting}>
-                Add
+                Create
               </Button>
             </div>
           </form>
@@ -112,18 +146,18 @@ const ChapterForm = ({ initialData, courseId }: ChapterFormProps) => {
       )}
       {!isEditing &&
       (!initialData.chapters || initialData.chapters.length === 0) ? (
-        <p className="text-sm text-slate-500 italic my-2">No chapters.</p>
+        <p className="text-sm text-slate-500 italic mt-2">No chapters.</p>
       ) : (
-        <div>
-          {initialData.chapters?.map((chapter) => (
-            <p key={chapter} onClick={() => onEdit(chapter)}>
-              {chapter}
-            </p>
-          ))}
-        </div>
+        !isEditing && (
+          <ChaptersList
+            onEdit={onEdit}
+            onReorder={onReorder}
+            items={chapters}
+          />
+        )
       )}
       {!isEditing && (
-        <p className="text-sm text-slate-700">Drag & drop to reorder</p>
+        <p className="text-sm text-slate-700 mt-2">Drag & drop to reorder</p>
       )}
     </div>
   );

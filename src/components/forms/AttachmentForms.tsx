@@ -95,6 +95,7 @@ const AttachmentForm = ({
       (!initialData.attachments || initialData.attachments?.length === 0) ? (
         <p className="text-sm text-slate-500 italic mt-2">No attachments.</p>
       ) : (
+        !isEditing &&
         courseAttachments?.map((attachment) => (
           <div
             key={attachment._id}
