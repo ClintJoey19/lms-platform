@@ -21,7 +21,14 @@ const chapterSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    muxData: {},
+    muxData: {
+      assetId: {
+        type: String,
+      },
+      playbackId: {
+        type: String,
+      },
+    },
   },
   { timestamps: true }
 );

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { Chapter } from "../models/chapter.model";
 import { connectToDB } from "../mongoose";
 import { parseJSON } from "../utils";
+import { video } from "../mux";
 
 export const getChapter = async (id: string) => {
   try {
@@ -47,6 +48,21 @@ export const updateChapter = async (
     await Chapter.findByIdAndUpdate(chapterId, {
       [key]: value,
     });
+
+    if (key === "videoUrl") {
+      const asset = await video.assets.create({
+        input: [{ url: value }],
+        playback_policy: ["public"],
+        test: false,
+      });
+
+      await Chapter.findByIdAndUpdate(chapterId, {
+        muxData: {
+          assetId: asset.id,
+          playbackId: asset.playback_ids?.[0]?.id,
+        },
+      });
+    }
 
     revalidatePath(`/teacher/courses/${courseId}/chapters/${chapterId}`);
   } catch (error: any) {

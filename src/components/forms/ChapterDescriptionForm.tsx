@@ -77,9 +77,10 @@ const ChapterDescriptionForm = ({
           )}
         </Button>
       </div>
-      {!isEditing && !initialData.description ? (
+      {!isEditing && !initialData.description && (
         <p className="text-sm mt-2 italic text-slate-500">No description.</p>
-      ) : (
+      )}
+      {!isEditing && initialData.description && (
         <Preview value={initialData.description} />
       )}
       {isEditing && (
