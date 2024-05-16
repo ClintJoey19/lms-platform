@@ -1,7 +1,8 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { updateCourse } from "@/lib/actions/course.action";
+import { deleteCourse, updateCourse } from "@/lib/actions/course.action";
 import { Trash } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -18,6 +19,7 @@ const CourseActions = ({
 }: CourseActionsProps) => {
   const [isPublishing, setIsPublishing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const router = useRouter();
 
   const value = isPublished ? false : true;
 
@@ -37,6 +39,10 @@ const CourseActions = ({
   const handleDelete = async () => {
     try {
       setIsDeleting(true);
+      await deleteCourse(courseId);
+
+      toast.success("Chapter deleted");
+      router.replace("/teacher/courses");
     } catch (error: any) {
       console.error(error.message);
       toast.error(error.message);

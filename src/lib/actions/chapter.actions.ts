@@ -1,5 +1,4 @@
 "use server";
-
 import { revalidatePath } from "next/cache";
 import { Chapter } from "../models/chapter.model";
 import { connectToDB } from "../mongoose";
@@ -65,6 +64,14 @@ export const updateChapter = async (
     }
 
     revalidatePath(`/teacher/courses/${courseId}/chapters/${chapterId}`);
+  } catch (error: any) {
+    console.error(error.message);
+  }
+};
+
+export const deleteChapter = async (chapterId: string) => {
+  try {
+    await Chapter.findByIdAndDelete(chapterId);
   } catch (error: any) {
     console.error(error.message);
   }

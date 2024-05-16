@@ -37,16 +37,20 @@ const page = async ({ params }: { params: { courseId: string } }) => {
   let courseChapters = [];
 
   if (course) {
-    // atachments
-    for (const attachment of course.attachments) {
-      const res = await getAttachment(attachment);
-      courseAttachments.push(res);
+    if (course.attachments) {
+      // atachments
+      for (const attachment of course.attachments) {
+        const res = await getAttachment(attachment);
+        courseAttachments.push(res);
+      }
     }
 
-    // chapters
-    for (const chapter of course.chapters) {
-      const res = await getChapter(chapter);
-      courseChapters.push(res);
+    if (course.chapters) {
+      // chapters
+      for (const chapter of course.chapters) {
+        const res = await getChapter(chapter);
+        courseChapters.push(res);
+      }
     }
   }
 

@@ -75,7 +75,7 @@ export const updateCourse = async (id: string, key: string, value: any) => {
       [key]: value,
     });
 
-    revalidatePath(`/teacher/course/${id}`);
+    revalidatePath(`/teacher/courses/${id}`);
   } catch (err: any) {
     console.error(err.message);
   }
@@ -93,7 +93,7 @@ export const addAttachment = async (id: string, attachmentId: string) => {
         : [attachmentId],
     });
 
-    revalidatePath(`/teacher/course/${id}`);
+    revalidatePath(`/teacher/courses/${id}`);
     return parseJSON(res);
   } catch (error: any) {
     console.error(error.message);
@@ -114,8 +114,18 @@ export const addChapter = async (id: string, chapterId: string) => {
       chapters: course.chapters ? [...course.chapters, chapterId] : [chapterId],
     });
 
-    revalidatePath(`/teacher/course/${id}`);
+    revalidatePath(`/teacher/courses/${id}`);
     return parseJSON(res);
+  } catch (error: any) {
+    console.error(error.message);
+  }
+};
+
+export const deleteCourse = async (id: string) => {
+  try {
+    connectToDB();
+
+    await Course.findByIdAndDelete(id);
   } catch (error: any) {
     console.error(error.message);
   }
